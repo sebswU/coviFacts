@@ -61,7 +61,7 @@ client.on('message', msg => {
     storeImp();
     
   }
-  if (msg.content == '!discretion') {
+  if (msg.content === '!discretion') {
     usrOnNotice();
     secondChance();
     clearTimeout(greenArea);

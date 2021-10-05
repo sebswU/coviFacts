@@ -10,7 +10,7 @@ client.on('ready', () => {//all client. functions are arrow functions
     console.log("active now")
 })
 
-client.on('message', msg => {
+client.on('messageCreate', msg => {
   var greenArea;
   const usrOnNotice = async() => {//gets user that said/spammed a bad thing
     let susiBaka = message.guild.members.cache.get();

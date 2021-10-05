@@ -17,37 +17,45 @@ client.on('messageCreate', msg => {
     return susiBaka;
   }
   const storeImp = async() => {//remembers the suspect in case he/she does it again
-    let suspect = await usrOnNotice();
+    try {
+      let suspect = await usrOnNotice();
+      if (listofsusppl.includes(suspect)) {//strike 2
+        listofsusppl.pop(suspect);
+        listofverysusppl.push(suspect);
+        message.reply("this is a warning. You have been put on notice. Other members can type in !discretion within 30 seconds in order to take matters into other consideration.");
 
-    
-    if (listofsusppl.includes(suspect)) {//strike 2
-      listofsusppl.pop(suspect);
-      listofverysusppl.push(suspect);
-      message.reply("this is a warning. You have been put on notice. Other members can type in !discretion within 30 seconds in order to take matters into other consideration.");
-
-    } else if (listofverysusppl.includes(suspect)) {//strike 3 (kicks user out)
-      listofverysusppl.pop(suspect);
-      listofbadppl.push(suspect);
-      suspect.kick();
-    } else { // strike 1
-      listofsusppl.push(suspect);
-      msg.reply('your recent post may contain misinformation, which violates Discord platform policies. Please refrain from further discussion on the current subject. Inaccountability to cooperate otherwise may result in indefinite suspension. For any questions regarding the coronavirus and the vaccines pertaining to it, please visit:\n'+`${infoList[0]}`);
+      } else if (listofverysusppl.includes(suspect)) {//strike 3 (kicks user out)
+        listofverysusppl.pop(suspect);
+        listofbadppl.push(suspect);
+        suspect.kick();
+      } else { // strike 1
+        listofsusppl.push(suspect);
+        msg.reply('your recent post may contain misinformation, which violates Discord platform policies. Please refrain from further discussion on the current subject. Inaccountability to cooperate otherwise may result in indefinite suspension. For any questions regarding the coronavirus and the vaccines pertaining to it, please visit:\n'+`${infoList[0]}`);
+      }
+    } catch(e) {
+      console.log(e);
     }
+
   }
   const secondChance = async() => {//removes any wrongdoing actions by bot
-    let suggestor = await usrOnNotice();
-    if (suggestor !== suspect && discretionFlag === true) {
-      if (listofsusppl.includes(suspect)) {//if innocent got strike 2
+    try {
+      let suggestor = await usrOnNotice();
+      if (suggestor !== suspect && discretionFlag === true) {
+        if (listofsusppl.includes(suspect)) {//if innocent got strike 2
+          listofsusppl.pop(suspect);
+        } else if (listofverysusppl.includes(suspect)) {//strike 3 innocent
+          listofverysusppl.pop(suspect);
+        } 
         listofsusppl.pop(suspect);
-      } else if (listofverysusppl.includes(suspect)) {//strike 3 innocent
-        listofverysusppl.pop(suspect);
-      } 
-      listofsusppl.pop(suspect);
-      clearTimeout(greenArea);
-      msg.reply("Thank you for informing about a misunderstanding.");
-    } else {
-      msg.reply("you cannot bail yourself out");
+        clearTimeout(greenArea);
+        msg.reply("Thank you for informing about a misunderstanding.");
+      } else {
+        msg.reply("you cannot bail yourself out");
     }
+      
+      } catch(error) {
+        console.log(error);
+      }
   }
   
 

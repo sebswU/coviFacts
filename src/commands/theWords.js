@@ -1,15 +1,53 @@
+/** 
+* @param {require('../index.js')} client
+*/
+require('@tensorflow-models/tfjs');
 const discord = require('discord.js');
-const client = new discord.Client();
-const theWords = ['hoax','anti-vax','deep state','democrats','communists','all a ploy']
-const infoList = ['https://www.cdc.gov/coronavirus/2019-ncov/index.html']
+const model = require('@tensorflow-models/toxicity');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
+const { clientId, guildId, token } = require('../config.json');
 const listofsusppl = [];
 const listofverysusppl = [];
 const listofbadppl = [];
+let baddie = false;
+const theWords = ['hoax','anti-vax','deep state','democrats','communists','all a ploy']
+const infoList = ['https://www.cdc.gov/coronavirus/2019-ncov/index.html']
 
-client.on('ready', () => {//all client. functions are arrow functions
-    console.log("active now")
-})
+// The minimum prediction confidence.
+const threshold = 0.9;
 
+// Load the model. Users optionally pass in a threshold and an array of
+// labels to include.
+toxicity.load(threshold).then(model => {
+  const sentences = msg.content;//takes in discord texts as input
+
+  model.classify(sentences).then(predictions => {
+    // `predictions` is an array of objects, one for each prediction head,
+    // that contains the raw probabilities for each input along with the
+    // final prediction in `match` (either `true` or `false`).
+    // If neither prediction exceeds the threshold, `match` is `null`.
+    if (match !== null) {
+      baddie = true;
+    }
+  });
+});
+//make comment here, is supposed to be for 
+const commands = [
+	new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!'),
+	new SlashCommandBuilder().setName('server').setDescription('Replies with server info!'),
+	new SlashCommandBuilder().setName('user').setDescription('Replies with user info!'),
+]
+	.map(command => command.toJSON());
+
+const rest = new REST({ version: '9' }).setToken(token);
+
+rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+	.then(() => console.log('Successfully registered application commands.'))
+	.catch(console.error);
+
+let suspect;
 client.on('messageCreate', msg => {
   var greenArea;
   const usrOnNotice = async() => {//gets user that said/spammed a bad thing
@@ -18,7 +56,7 @@ client.on('messageCreate', msg => {
   }
   const storeImp = async() => {//remembers the suspect in case he/she does it again
     try {
-      let suspect = await usrOnNotice();
+        suspect = await usrOnNotice();
       if (listofsusppl.includes(suspect)) {//strike 2
         listofsusppl.pop(suspect);
         listofverysusppl.push(suspect);
@@ -61,24 +99,23 @@ client.on('messageCreate', msg => {
 
   if (msg.author.bot) return//so that the bot does not react to itself
 
-  if (theWords.some(theWords => msg.content.includes(theWords))) { 
+  if (sussy === true) { 
     usrOnNotice();//detects *theWords(tm)*
     
     let discretionFlag = true;
-    greenArea = setTimeout(discretionFlag = false, 30000);
+    setTimeout(discretionFlag = false, 30000);
     storeImp();
     
   }
   if (msg.content === '!discretion') {
     usrOnNotice();
     secondChance();
-    clearTimeout(greenArea);
+    clearTimeout();
   }
+
   if (msg.content === "hi covifacts bot") {
-      msg.reply('Hi! :) Any questions about Covid and the vaccines?')
+    msg.reply('Hi! :) Any questions about Covid and the vaccines?')
   } else if (msg.content === 'bye covifacts bot'){
     msg.reply('Bye! Have a nice day!');
   }
 })
-
-client.login(process.env['TOKEN'])

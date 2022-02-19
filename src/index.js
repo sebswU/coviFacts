@@ -1,7 +1,14 @@
+const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { token } = require('./config.json');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const dotenv = require('dotenv');
+dotenv.config();
+const client = new Client({ 
+		intents: [
+			Intents.FLAGS.GUILDS, 
+			Intents.FLAGS.GUILD_MESSAGES
+		] 
+	});
 //discordjs command files
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -47,4 +54,4 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
-client.login(token);
+client.login(process.env.TOKEN);

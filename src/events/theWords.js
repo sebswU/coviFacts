@@ -4,10 +4,13 @@
 
 const discord = require('discord.js');
 
-module.exports = async (client, message) => {
-  if (msg.author.bot) return//so that the bot does not react to itself
-  let susiBaka = await client.GetGuild(message.guild.id);//the suspect that has been accused
+module.exports = {
+  name: 'suspicion',
+  async execute(client, message) {
+    let susiBaka = await client.GetGuild(message.guild.id);//the suspect that has been accused
   
-  
-  return susiBaka;
+    console.log('menace to society id to ban:')
+    console.log(susiBaka);
+  }
 }
+  

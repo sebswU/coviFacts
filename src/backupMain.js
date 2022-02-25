@@ -4,7 +4,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const dotenv = require('dotenv');
 //const { computeOutShape } = require('@tensorflow/tfjs-core/dist/ops/slice_util');
 dotenv.config();
-const theWords = ['ploy','deep state','population control','coronavirus is fake','chinavirus','chinese virus', 'fake vaccine'];
+const theWords = ['ploy','deep state','population control','coronavirus is fake','chinavirus','covid agenda', 'fake vaccine'];
 const theInfo = ['https://www.cdc.gov/coronavirus/2019-ncov/index.html']
 const client = new Client({ 
 		intents: [
@@ -44,6 +44,7 @@ for (const file of eventFiles) {
 client.once('ready', () => {//all client. functions are arrow functions
     console.log("active now");
 })
+//runs when message is created
 client.on('messageCreate', msg => {
 	if (msg.author.bot) return;
 	if (theWords.some(word => msg.content.includes(word))) {

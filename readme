@@ -2,3 +2,5 @@ This is a covid bot that detects misinformation using data from the internet and
 Suspected users are put under suspicion and will be kicked out if seen as a serious threat
 The models come from tfhub.dev and tensorflow.org.
 Other discord users can use commands to bail suspected user if a false decision has been made
+ignored files include the node_modules folder, including discordjs, discordjs-builders, sequelize, and sqlite3
+these files are required to locally run the bot

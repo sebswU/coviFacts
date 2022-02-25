@@ -1,8 +1,11 @@
 const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
+const { Client, Collection, Intents, Message } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const dotenv = require('dotenv');
+//const { computeOutShape } = require('@tensorflow/tfjs-core/dist/ops/slice_util');
 dotenv.config();
+const theWords = ['ploy','deep state','population control','coronavirus is fake','chinavirus','chinese virus', 'fake vaccine'];
+const theInfo = ['https://www.cdc.gov/coronavirus/2019-ncov/index.html']
 const client = new Client({ 
 		intents: [
 			Intents.FLAGS.GUILDS, 
@@ -41,9 +44,14 @@ for (const file of eventFiles) {
 client.once('ready', () => {//all client. functions are arrow functions
     console.log("active now");
 })
-
+client.on('messageCreate', msg => {
+	if (msg.author.bot) return;
+	if (theWords.some(word => msg.content.includes(word))) {
+		msg.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`)
+	}
+})
 client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) return;
+
 	const command = client.commands.get(interaction.commandName);
 
 	if (!command) return;
@@ -53,6 +61,11 @@ client.on('interactionCreate', async interaction => {
 	} catch (error) {
 		console.error(error);
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+	}
+	if (interaction.commandName === 'discretion') {
+		await interaction.reply({content:'We will look into it!', ephemeral: true});
+		const string = interaction.options.getString('input');
+		console.log(`discretionary wants to release ${string}`);
 	}
 });
 

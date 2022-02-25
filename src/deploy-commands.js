@@ -11,10 +11,13 @@ for (const file of commandFiles) {
 	commands.push(command.data.toJSON());
 }
 //make comment here, is supposed to be for 
-const commands = [
-	new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!'),
-	new SlashCommandBuilder().setName('server').setDescription('Replies with server info!'),
-	new SlashCommandBuilder().setName('user').setDescription('Replies with user info!'),
+const commands = [{
+	name: 'ping',
+	description: 'replies with pong'
+},{
+	name: 'discretion',
+	description:'removes actions by bot if sees fit'
+}
 ]
 	.map(command => command.toJSON());
 

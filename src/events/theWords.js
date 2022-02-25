@@ -1,6 +1,4 @@
-/** 
-* @param {require('../index.js')} client
-*/
+
 
 const discord = require('discord.js');
 

@@ -5,8 +5,8 @@ const { Routes } = require('discord-api-types/v9');
 const dotenv = require('dotenv');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 //address for the slash commands
-const guildId = '868281145090003004';
-const clientId = '868685027226038292';
+const guildId = process.env.GUILDID;
+const clientId = process.env.CLIENTID;
 
 const commands = [
 	new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!'),

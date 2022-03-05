@@ -15,6 +15,8 @@ const client = new Client({
         Intents.FLAGS.GUILD_MESSAGES
     ] 
 });
+const list = client.guilds.cache.get(process.env.GUILDID); 
+list.members.cache.forEach(member => console.log(member.user.username)); 
 
 client.commands = new Collection();
 //discordjs command files
@@ -53,6 +55,7 @@ const Tags = sequelize.define('tags', {//each instance (row) in the database is 
         type: Sequelize.STRING,
         unique: true,
     },
+
     description: Sequelize.TEXT,
     username: Sequelize.STRING,
     usage_count: {
@@ -129,6 +132,9 @@ client.on('interactionCreate', async interaction => {
         return interaction.reply('Your request has been considered');
 
 	} 
+    if (commandName === 'ping') {
+        await interaction.reply('pong');
+    }
 });
 
 client.login(process.env.TOKEN);

@@ -1,17 +1,14 @@
-const fs = require('fs');
+const fs = require('node:fs');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 //address for the slash commands
 const guildId = process.env.GUILDID;
 const clientId = process.env.CLIENTID;
 
-const commands = [
-	new SlashCommandBuilder().setName('ping').setDescription('Replies with pong!'),
-	new SlashCommandBuilder().setName('discretion').setDescription('sends message to owner of wrong bot decision')
-]
+const commands = []
 	.map(command => command.toJSON());
 
 for (const file of commandFiles) {

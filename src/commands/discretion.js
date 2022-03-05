@@ -5,7 +5,7 @@ module.exports = {
             .setName('discretion')
             .setDefaultPermission(true)
             .setDescription('removes any wrongdoing actions by bot if it sees fit (reinforcement mechanism)')
-            .addIntegerOption(option => 
+            .addStringOption(option => 
                   option.setName('username')
                   .setDescription('Enter wronged user with the #XXXX')
                   .setRequired(true)

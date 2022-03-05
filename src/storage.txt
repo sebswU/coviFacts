@@ -70,3 +70,21 @@ discretion.js
             } catch(error) {
                 console.log(error);
             }
+///////////////////
+main.js  
+if (error.name === 'SequelizeUniqueConstraintError') {//if user already added on there
+                const tag = await Tags.findOne({where: {name: tagName}});
+                if (tag) {
+                    tag.increment('usage_count')//records the amount of times user has been caught
+                    const addedDesc = await Tags.update({description: tagDescription + "\nmisinformation"}, {where: {name: tagName}});
+                    if (!addedDesc) {//if the updating description process did not work...
+                        console.log('something went wrong with updating')
+                        return interaction.reply('not working at the moment')
+                    }
+                    if (tag.get('usage_count') == 3) {//suggests user be kicked if the strike # is 3
+                        console.log(`${tag.get(Username)} needs to be kicked. Please consider this decision.`)
+                    }
+                }
+            }
+            //or display the miscellaneous error
+            return msg.reply(`Something went wrong with adding a tag. Error: ${error}`);          

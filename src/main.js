@@ -1,6 +1,7 @@
 /*
 *this file is used to test the database features of the bot; if ok, then will be incorporated into index.js
 */
+'use strict';
 const Sequelize = require('sequelize');
 const fs = require('fs')
 const { Client, Collection, Intents, Message } = require('discord.js');
@@ -15,8 +16,7 @@ const client = new Client({
         Intents.FLAGS.GUILD_MESSAGES
     ] 
 });
-const list = client.guilds.cache.get(process.env.GUILDID); 
-list.members.cache.forEach(member => console.log(member.user.username)); 
+
 
 client.commands = new Collection();
 //discordjs command files
@@ -65,6 +65,7 @@ const Tags = sequelize.define('tags', {//each instance (row) in the database is 
     },
 });
 
+
 client.once('ready', () => {
 	Tags.sync();
     console.log('bot is up and running')
@@ -74,38 +75,26 @@ client.on('messageCreate', async msg =>{
         //later on, this message will be modified to be dynanic and adaptive to type of malicious content detected
 		msg.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
         const tagName = msg.author.id;
-        const tagDescription = 'misinformation';
         const Username = msg.author.username;
 
-        try {
-            // equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
-            const tag = await Tags.create({//creates a database and 
-                name: tagName,
-                description: tagDescription,
-                username: Username,
-                usage_count: 1,
-            });
-
-            return msg.reply(`Tag ${tag.name} added.`);
-        }
-        catch (error) {
-            if (error.name === 'SequelizeUniqueConstraintError') {//if user already added on there
-                const tag = await Tags.findOne({where: {name: tagName}});
-                if (tag) {
-                    tag.increment('usage_count')//records the amount of times user has been caught
-                    const addedDesc = await Tags.update({description: tagDescription + "\nmisinformation"}, {where: {name: tagName}});
-                    if (!addedDesc) {//if the updating description process did not work...
-                        console.log('something went wrong with updating')
-                        return interaction.reply('not working at the moment')
-                    }
-                    if (tag.get('usage_count') == 3) {//suggests user be kicked if the strike # is 3
-                        console.log(`${tag.get(Username)} needs to be kicked. Please consider this decision.`)
-                    }
-                }
+        const userKey = await Tags.findOne({where: {tagName: IDEntered}})
+            if (userKey) {
+                return userKey.increment('usage_count');
+            } 
+            try {
+                // equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
+                const tag = await Tags.create({//creates a database and 
+                    name: tagName,
+                    description: 'misinformation',
+                    username: Username,
+                    usage_count: 1,
+                });
+    
+                return msg.reply(`Tag ${tag.name} added.`);
+            } catch(error) {
+                return interaction.reply('something went wrong with adding tag')
             }
-            //or display the miscellaneous error
-            return msg.reply(`Something went wrong with adding a tag. Error: ${error}`);
-        }
+            //or display the miscellaneous error        }
 	}
 })
 client.on('interactionCreate', async interaction => {
@@ -132,6 +121,35 @@ client.on('interactionCreate', async interaction => {
         return interaction.reply('Your request has been considered');
 
 	} 
+    if (commandName === 'report') {
+        const IDEntered = interaction.options.getString('userid');
+        const usernameEntered = interaction.options.getString('username')
+        const descriptOpt = interaction.options.getString('description')
+        const wordEntered = interaction.options.getString('word')
+        
+        if (wordEntered) {
+            theWords.push(wordEntered)
+            interaction.reply('your word has been recorded')
+        }
+        const userKey = await Tags.findOne({where: {tagName: IDEntered}})
+        if (userKey) {//increments count if already in database
+            return userKey.increment('usage_count');
+        } 
+        try {
+            const tag = await Tags.create({
+                //creates a database with inputted values from slash command
+                name: IDEntered,
+                description: descriptOpt,
+                username: usernameEntered,
+                usage_count: 1,
+            });
+
+            return msg.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
+        } catch(error) {
+            return interaction.reply(`something went wrong with adding tag. Error: ${error}`)
+        }
+        
+    }
     if (commandName === 'ping') {
         await interaction.reply('pong');
     }

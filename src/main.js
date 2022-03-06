@@ -74,27 +74,27 @@ client.on('messageCreate', async msg =>{
     if (theWords.some(word => msg.content.includes(word))) {
         //later on, this message will be modified to be dynanic and adaptive to type of malicious content detected
 		msg.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
-        const tagName = msg.author.id;
+        const fugitiveName = msg.author.id;//user id
         const Username = msg.author.username;
 
-        const userKey = await Tags.findOne({where: {tagName: IDEntered}})
-            if (userKey) {
-                return userKey.increment('usage_count');
-            } 
-            try {
-                // equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
-                const tag = await Tags.create({//creates a database and 
-                    name: tagName,
-                    description: 'misinformation',
-                    username: Username,
-                    usage_count: 1,
-                });
-    
-                return msg.reply(`Tag ${tag.name} added.`);
-            } catch(error) {
-                return interaction.reply('something went wrong with adding tag')
-            }
-            //or display the miscellaneous error        }
+        const userKey = await Tags.findOne({where: {name: fugitiveName}})
+        if (userKey) {
+            return userKey.increment('usage_count');
+        } 
+        try {
+            // equivalent to: INSERT INTO tags (name, description, username) values (?, ?, ?);
+            const tag = await Tags.create({//creates a database and 
+                name: fugitiveName,
+                description: 'misinformation',
+                username: Username,
+                usage_count: 1,
+            });
+
+            return msg.reply(`Tag ${tag.name} added.`);
+        } catch(error) {
+            return msg.reply('something went wrong with adding tag')
+        }
+        //or display the miscellaneous error        }
 	}
 })
 client.on('interactionCreate', async interaction => {
@@ -109,7 +109,7 @@ client.on('interactionCreate', async interaction => {
 		const tagName = interaction.options.getString('username');
 
         // takes the tag out of the system
-        const rowCount = await Tags.destroy({ where: { name: tagName } });
+        const rowCount = await Tags.destroy({ where: { username: tagName } });
 
         if (!rowCount) return interaction.reply('That tag did not exist.');
         console.log(`${tagName} has been wrongly convicted of spreading misinformation`)
@@ -129,9 +129,8 @@ client.on('interactionCreate', async interaction => {
         
         if (wordEntered) {
             theWords.push(wordEntered)
-            interaction.reply('your word has been recorded')
         }
-        const userKey = await Tags.findOne({where: {tagName: IDEntered}})
+        const userKey = await Tags.findOne({where: {name: IDEntered}})
         if (userKey) {//increments count if already in database
             return userKey.increment('usage_count');
         } 
@@ -143,8 +142,12 @@ client.on('interactionCreate', async interaction => {
                 username: usernameEntered,
                 usage_count: 1,
             });
+            //show if its actually in there by getting all values and printing it in terminal
+            const tagList = await Tags.findAll({ attributes: ['name'] });
+            const tagString = tagList.map(t => t.name).join(', ') || 'No tags set.';
+            console.log(`List of tags: ${tagString}`);
 
-            return msg.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
+            return interaction.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
         } catch(error) {
             return interaction.reply(`something went wrong with adding tag. Error: ${error}`)
         }

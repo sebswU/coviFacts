@@ -1,19 +1,18 @@
-/*
-*this file is used to test the database features of the bot; if ok, then will be incorporated into index.js
-*/
+
 'use strict';
 const Sequelize = require('sequelize');
 const fs = require('fs')
-const { Client, Collection, Intents, Message } = require('discord.js');
-const theWords = ['ploy','deep state','population control','coronavirus is fake','chinavirus','covid agenda', 'fake vaccine'];
-const tagDescriptions = ['spam','threat','misinformation']
+const { Client, Collection, Intents, Message, ReactionCollector } = require('discord.js');
+const theWords = [' government ploy','deep state','population control experiment','coronavirus is fake','chinavirus','covid agenda', 'fake vaccine'];
 const dotenv = require('dotenv');
+
 const theInfo = ['https://www.cdc.gov/coronavirus/2019-ncov/index.html']
 dotenv.config();
 const client = new Client({ 
     intents: [
         Intents.FLAGS.GUILDS, 
-        Intents.FLAGS.GUILD_MESSAGES
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS
     ] 
 });
 
@@ -50,7 +49,7 @@ const sequelize = new Sequelize('database', 'user', 'password', {
 	// SQLite only
 	storage: 'database.sqlite',
 });
-const Tags = sequelize.define('tags', {//each instance (row) in the database is called a Tag for some reason
+const Tags = sequelize.define('tags', {//each instance (row) in the database is called a Tag 
     name: {
         type: Sequelize.STRING,
         unique: true,
@@ -65,20 +64,21 @@ const Tags = sequelize.define('tags', {//each instance (row) in the database is 
     },
 });
 
-
 client.once('ready', () => {
 	Tags.sync();
     console.log('bot is up and running')
 });
 client.on('messageCreate', async msg =>{
     if (theWords.some(word => msg.content.includes(word))) {
-        //later on, this message will be modified to be dynanic and adaptive to type of malicious content detected
 		msg.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
-        const fugitiveName = msg.author.id;//user id
-        const Username = msg.author.username;
+        const fugitiveName = msg.author.id;//user id is unique number combination belonging to specific acc
+        const Username = msg.author.username;//username is the actual visible username
 
         const userKey = await Tags.findOne({where: {name: fugitiveName}})
         if (userKey) {
+            if (userKey.usage_count >= 3) {
+                console.log(`it is suggested that you permanently ban this user: ${userKey.username}`)
+            }
             return userKey.increment('usage_count');
         } 
         try {
@@ -96,6 +96,13 @@ client.on('messageCreate', async msg =>{
         }
         //or display the miscellaneous error        }
 	}
+    if (msg.content.includes('!word')) {//command will send the message in the polling channel
+        const arg = msg.content.slice(6).split(/ +/);//gets everything to the right of the !word command
+        const wordEntered = arg.shift();
+        const channel = client.channels.cache.get('953049903859396699')
+        const poll = channel.send(`is ${wordEntered} a good candidate for determining misinformation?`)
+        msg.reply('admin will look at word poll response and act accordingly')//admin will look and use the add feature to use
+    }
 })
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
@@ -115,21 +122,17 @@ client.on('interactionCreate', async interaction => {
         console.log(`${tagName} has been wrongly convicted of spreading misinformation`)
         //show the changed list in the terminal
         const tagList = await Tags.findAll({ attributes: ['name'] });
-        const tagString = tagList.map(t => t.name).join(', ') || 'No tags set.';
+        const tagString = tagList.map(t => t.username).join(', ') || 'No tags set.';
 
-        console.log(`List of tags: ${tagString}`);
-        return interaction.reply('Your request has been considered');
+        console.log(`List of usernames: ${tagString}`);
+        return interaction.reply('Your request has been considered');//notifies user of slash command that it worked
+
 
 	} 
     if (commandName === 'report') {
         const IDEntered = interaction.options.getString('userid');
         const usernameEntered = interaction.options.getString('username')
-        const descriptOpt = interaction.options.getString('description')
-        const wordEntered = interaction.options.getString('word')
-        
-        if (wordEntered) {
-            theWords.push(wordEntered)
-        }
+        const descriptOpt = interaction.options.getString('description')        
         const userKey = await Tags.findOne({where: {name: IDEntered}})
         if (userKey) {//increments count if already in database
             return userKey.increment('usage_count');
@@ -153,8 +156,10 @@ client.on('interactionCreate', async interaction => {
         }
         
     }
-    if (commandName === 'ping') {
-        await interaction.reply('pong');
+    if (commandName === 'newword') {
+       if (msg.member.permissionsIn(msg.channel).has("ADMINISTRATOR")) {
+            theWords.push(interaction.options.getString('addition'))
+       }
     }
 });
 

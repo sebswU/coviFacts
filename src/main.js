@@ -157,9 +157,11 @@ client.on('interactionCreate', async interaction => {
         
     }
     if (commandName === 'newword') {
-       if (msg.member.permissionsIn(msg.channel).has("ADMINISTRATOR")) {
+       if (interaction.member?.permissions.has("ADMINISTRATOR")) {
             theWords.push(interaction.options.getString('addition'))
+            return interaction.reply('word added')
        }
+       return interaction.reply('you don\'t have the right permissions to do this')
     }
 });
 

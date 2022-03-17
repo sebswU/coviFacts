@@ -99,11 +99,11 @@ client.on('messageCreate', async msg =>{
 	}
     if (msg.content.includes('!word')) {//command will send the message in the polling channel
         const arg = msg.content.slice(6).split(/ +/);//gets everything to the right of the !word command
-        const wordEntered = arg.shift();
-        const channel = client.channels.cache.get('953049903859396699')
-        const poll = channel.send(`is ${wordEntered} a good candidate for determining misinformation?`)
+        const wordEntered = arg.shift();//basically variablething = interaction.options.get('word')
+        const channel = client.channels.cache.get('953049903859396699')//copy/paste 103 and 104 into the slash command code
+        channel.send(`is ${wordEntered} a good candidate for determining misinformation?`)
         msg.reply('admin will look at word poll response and act accordingly')//admin will look and use the add feature to use
-    }
+    }//instead of msg.reply do interaction.reply
 })
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;

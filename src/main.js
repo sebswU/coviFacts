@@ -121,11 +121,26 @@ client.on('interactionCreate', async interaction => {
         return interaction.reply('Your request has been considered');
 
 	} 
+    if (commandName === 'poll') {
+        const wordSuggestion = interaction.options.getString('word')
+        //user types the word he/she wants to suggest
+        const channel = client.channels.cache.get('953049903859396699')
+        channel.send(`${wordSuggestion}: is this a key word that is uncaught? React with :thumbsup: up or :thumbsdown:`)
+        return interaction.reply('your suggested key word is up for debate')
+    
+        // The suggested word by user is sent to the polling chat 
+        //where the reactions can be seen and administrator can act upon the reactions
+        
+    }
     if (commandName === 'report') {
         const IDEntered = interaction.options.getString('userid');
+        //User types in userid of the user he/she wants to report
         const usernameEntered = interaction.options.getString('username')
+        //User types in actual username displayed in the server of the user he/she wants to report
         const descriptOpt = interaction.options.getString('description')
+        //User explains the reason why he/she wants to report this user
         const wordEntered = interaction.options.getString('word')
+        //User suggest to the administrator a word the bot should detect in future situation
         
         if (wordEntered) {
             theWords.push(wordEntered)

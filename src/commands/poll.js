@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     data: new SlashCommandBuilder
-    .setName('Poll')
+    .setName('poll')
     .setDefaultPermission(true)
     .setDescription('Input a word and the bot will make a poll in the polling channel')
     .addStringOption(option =>

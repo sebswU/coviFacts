@@ -6,9 +6,9 @@ module.exports = {
             .setDefaultPermission(true)
             .setDescription('removes any wrongdoing actions by bot if it sees fit')
             .addStringOption(option => 
-                  option.setName('username')// the option is the black box that is required
+                  option.setName('username')
                   .setDescription('Enter wronged user')
-                  .setRequired(true)// if set to true you cant use the slash command without putting sometning in
+                  .setRequired(true)
                   ),
 
 }

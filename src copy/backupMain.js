@@ -129,7 +129,7 @@ client.on('interactionCreate', async interaction => {
             theWords.push(wordEntered)
         }
         const userKey = await Tags.findOne({where: {name: IDEntered}})
-        if (userKey) {// count = count + 1 if already in database
+        if (userKey) {//increments count if already in database
             return userKey.increment('usage_count');
         } 
         try {
@@ -151,11 +151,8 @@ client.on('interactionCreate', async interaction => {
         }
         
     }
-    if (commandName === 'add') {
-        if (message.member.permissionsIn(message.channel).has("ADMINISTRATOR")) {
-			return theWords.push(interaction.options.getString())
-		}
-}
+    if (commandName === 'ping') {
+        await interaction.reply('pong');
     }
 });
 

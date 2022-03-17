@@ -3,13 +3,14 @@
 const Sequelize = require('sequelize');
 const fs = require('fs')
 const { Client, Collection, Intents, Message, ReactionCollector } = require('discord.js');
-const theWords = [' government ploy','deep state','population control experiment','coronavirus is fake','chinavirus','covid agenda', 'fake vaccine'];
+const theWords = ['government ploy','deep state','population control experiment','coronavirus is fake','chinavirus','covid agenda', 'fake vaccine'];
 const dotenv = require('dotenv');
 
 const theInfo = ['https://www.cdc.gov/coronavirus/2019-ncov/index.html']
-dotenv.config();
+//this is the link that the bot sends as a message if it detects misinfo
+dotenv.config();///stuff like the bot key (used to access the bot project) and the id for the server/bot stored in .env
 const client = new Client({ 
-    intents: [
+    intents: [// the current version requires the intents of the bot (what it has access to) to be stated 
         Intents.FLAGS.GUILDS, 
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS
@@ -18,7 +19,7 @@ const client = new Client({
 
 
 client.commands = new Collection();
-//discordjs command files
+//discordjs command files, collection allows us to parse through the commands file
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
@@ -50,7 +51,7 @@ const sequelize = new Sequelize('database', 'user', 'password', {
 	storage: 'database.sqlite',
 });
 const Tags = sequelize.define('tags', {//each instance (row) in the database is called a Tag 
-    name: {
+    name: {//user id
         type: Sequelize.STRING,
         unique: true,
     },
@@ -65,7 +66,7 @@ const Tags = sequelize.define('tags', {//each instance (row) in the database is 
 });
 
 client.once('ready', () => {
-	Tags.sync();
+	Tags.sync();//database starts, saves***
     console.log('bot is up and running')
 });
 client.on('messageCreate', async msg =>{
@@ -113,10 +114,10 @@ client.on('interactionCreate', async interaction => {
         if (identityBuffer) {//checks to see if the user isn't trying to get out of trouble
             return interaction.reply("Sorry, but you cannot bail yourself out.")
         }
-		const tagName = interaction.options.getString('username');
+		const user = interaction.options.getString('username');//get from user input
 
         // takes the tag out of the system
-        const rowCount = await Tags.destroy({ where: { username: tagName } });
+        const rowCount = await Tags.destroy({ where: { username: user } });
 
         if (!rowCount) return interaction.reply('That tag did not exist.');
         console.log(`${tagName} has been wrongly convicted of spreading misinformation`)
@@ -138,7 +139,7 @@ client.on('interactionCreate', async interaction => {
             return userKey.increment('usage_count');
         } 
         try {
-            const tag = await Tags.create({
+            const tag = await Tags.create({//add user into database if reported with id, name, and desc
                 //creates a database with inputted values from slash command
                 name: IDEntered,
                 description: descriptOpt,

@@ -22,4 +22,9 @@ module.exports = {
             .setDescription('copy bad user id and paste here')
             .setRequired(true)
             )
+        .addStringOption(option =>
+            option.setName('word')
+            .setDescription('new word that should have been used to catch someone')
+            .setRequired(false)
+            ),
 };

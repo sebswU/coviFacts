@@ -7,7 +7,7 @@ module.exports = {
             .setDescription('removes any wrongdoing actions by bot if it sees fit ')
             .addStringOption(option => 
                   option.setName('username')
-                  .setDescription('Enter wronged user with the #XXXX')
+                  .setDescription('Enter wronged user')
                   .setRequired(true)
                   ),
 

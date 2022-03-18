@@ -153,6 +153,13 @@ client.on('interactionCreate', async interaction => {
         }
         
     }
+    if (commandName === 'newword') {
+        if (interaction.member?.permissions.has("ADMINISTRATOR")) {
+             theWords.push(interaction.options.getString('addition'))
+             return interaction.reply('word added')
+        }
+        return interaction.reply('you don\'t have the right permissions to do this')
+     }
     if (commandName === 'ping') {
         await interaction.reply('pong');
     }

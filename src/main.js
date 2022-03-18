@@ -29,17 +29,7 @@ for (const file of commandFiles) {
 	console.log(command);
 	client.commands.set(command.data.name, command);
 }
-//discordjs EventEmitter class
-const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
-for (const file of eventFiles) {
-	const event = require(`./events/${file}`);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
-	} else {
-		client.on(event.name, (...args) => event.execute(...args));
-	}
-}
 //allows us to use external files and data from command files through 'require()'
 //"Collection" => scripts in the file called "commands"
 
@@ -139,12 +129,7 @@ client.on('interactionCreate', async interaction => {
         //User types in actual username displayed in the server of the user he/she wants to report
         const descriptOpt = interaction.options.getString('description')
         //User explains the reason why he/she wants to report this user
-        const wordEntered = interaction.options.getString('word')
-        //User suggest to the administrator a word the bot should detect in future situation
-        
-        if (wordEntered) {
-            theWords.push(wordEntered)
-        }
+
         const userKey = await Tags.findOne({where: {name: IDEntered}})
         if (userKey) {//increments count if already in database
             return userKey.increment('usage_count');
@@ -162,7 +147,7 @@ client.on('interactionCreate', async interaction => {
             const tagString = tagList.map(t => t.name).join(', ') || 'No tags set.';
             console.log(`List of tags: ${tagString}`);
 
-            return interaction.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
+            return interaction.reply(`The user ${tag.username} has been added to the misinformer database`);
         } catch(error) {
             return interaction.reply(`something went wrong with adding tag. Error: ${error}`)
         }

@@ -132,7 +132,8 @@ client.on('interactionCreate', async interaction => {
 
         const userKey = await Tags.findOne({where: {name: IDEntered}})
         if (userKey) {//increments count if already in database
-            return userKey.increment('usage_count');
+            userKey.increment('usage_count');
+            return interaction.reply('this user has been reported more than once, usage count incremented')
         } 
         try {
             const tag = await Tags.create({
@@ -147,7 +148,7 @@ client.on('interactionCreate', async interaction => {
             const tagString = tagList.map(t => t.name).join(', ') || 'No tags set.';
             console.log(`List of tags: ${tagString}`);
 
-            return interaction.reply(`The user ${tag.username} has been added to the misinformer database`);
+            interaction.reply(`The user ${tag.username} has been added to the misinformer database`);
         } catch(error) {
             return interaction.reply(`something went wrong with adding tag. Error: ${error}`)
         }

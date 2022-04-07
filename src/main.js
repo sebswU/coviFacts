@@ -1,12 +1,10 @@
 /*
 *this file is used to test the database features of the bot; if ok, then will be incorporated into index.js
 */
-'use strict';
 const Sequelize = require('sequelize');
 const fs = require('fs')
 const { Client, Collection, Intents, Message } = require('discord.js');
 const theWords = ['ploy','deep state','population control','coronavirus is fake','chinavirus','covid agenda', 'fake vaccine'];
-const tagDescriptions = ['spam','threat','misinformation']
 const dotenv = require('dotenv');
 const theInfo = ['https://www.cdc.gov/coronavirus/2019-ncov/index.html']
 dotenv.config();
@@ -61,6 +59,7 @@ client.once('ready', () => {
     console.log('bot is up and running')
 });
 client.on('messageCreate', async msg =>{
+    
     if (theWords.some(word => msg.content.includes(word))) {
         //later on, this message will be modified to be dynanic and adaptive to type of malicious content detected
 		msg.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
@@ -79,13 +78,29 @@ client.on('messageCreate', async msg =>{
                 username: Username,
                 usage_count: 1,
             });
-
+            let instance = {
+                content: msg,
+                isitbad: yes
+            }
+            fs.writeFile('textData.json', JSON.stringify(instance), function(err) {
+                if (err) throw err;
+                console.log('instance added')
+            })
             return msg.reply(`Tag ${tag.name} added.`);
         } catch(error) {
             return msg.reply('something went wrong with adding tag')
         }
         //or display the miscellaneous error        }
-	}
+	} else {
+        let instance = {
+            content: msg,
+            isitbad: no
+        }
+        fs.writeFile('textData.json', JSON.stringify(instance), function(err) {
+            if (err) throw err;
+            console.log('instance added')
+        })
+    }
 })
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;

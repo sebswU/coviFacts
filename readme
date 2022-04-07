@@ -1,6 +1,9 @@
-This is a covid bot that detects misinformation using data from the internet and neural networks.
-Suspected users are put under suspicion and will be kicked out if seen as a serious threat
-The models come from tfhub.dev and tensorflow.org.
-Other discord users can use commands to bail suspected user if a false decision has been made
+This is a covid bot that detects misinformation using a message listener on key words that can be edited via admin
+Suspected users are put under suspicion and will be reported to admin if seen as a serious threat (more than 3 times)
+Other discord users can use slash commands (command file to 
+-bail suspected user if a false decision has been made, 
+-report a user, 
+-submit a new word to a poll
+-add a new word to the key words list (theWords) AS ADMIN WITH PERMISSIONS TO DO SO
 ignored files include the node_modules folder, including discordjs, discordjs-builders, sequelize, and sqlite3
 these files are required to locally run the bot

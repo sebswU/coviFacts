@@ -3,8 +3,10 @@
 */
 const Sequelize = require('sequelize');
 const fs = require('fs')
+const tfjs = require('@tensorflow/tfjs-node');
+import * as tf from '@tensorflow/tfjs-node'
 const { Client, Collection, Intents, Message } = require('discord.js');
-const theWords = ['ploy','deep state','population control','coronavirus is fake','chinavirus','covid agenda', 'fake vaccine'];
+const theWords = ['ploy','deep state','population control','coronavirus is fake','chinavirus','covid agenda', 'fake vaccine', 'bioweapon'];
 const dotenv = require('dotenv');
 const theInfo = ['https://www.cdc.gov/coronavirus/2019-ncov/index.html']
 dotenv.config();
@@ -14,7 +16,7 @@ const client = new Client({
         Intents.FLAGS.GUILD_MESSAGES
     ] 
 });
-
+const model = await tf.loadLayersModel('https://foo.bar/tfjs_artifacts/model.json');
 
 client.commands = new Collection();
 //discordjs command files
@@ -59,7 +61,7 @@ client.once('ready', () => {
     console.log('bot is up and running')
 });
 client.on('messageCreate', async msg =>{
-    
+    if (msg.author.bot) return;
     if (theWords.some(word => msg.content.includes(word))) {
         //later on, this message will be modified to be dynanic and adaptive to type of malicious content detected
 		msg.reply(`${msg.author.username}, this is detected to be a malicious/disruptive comment. Please do not spread misinformation or spam content on the server. Here is information to educate:${theInfo[0]}`);
@@ -79,8 +81,8 @@ client.on('messageCreate', async msg =>{
                 usage_count: 1,
             });
             let instance = {
-                content: msg,
-                isitbad: yes
+                content: msg.content,
+                isitbad: true
             }
             fs.writeFile('textData.json', JSON.stringify(instance), function(err) {
                 if (err) throw err;
@@ -90,11 +92,12 @@ client.on('messageCreate', async msg =>{
         } catch(error) {
             return msg.reply('something went wrong with adding tag')
         }
-        //or display the miscellaneous error        }
+        //or display the miscellaneous error         
 	} else {
+        if (msg.author.bot) return;
         let instance = {
-            content: msg,
-            isitbad: no
+            content: msg.content,
+            isitbad: false
         }
         fs.writeFile('textData.json', JSON.stringify(instance), function(err) {
             if (err) throw err;
